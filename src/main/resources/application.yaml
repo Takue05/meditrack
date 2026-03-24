@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: MediTrack
+  datasource:
+    url: jdbc:mysql://localhost:3306/meditrack?createDatabaseIfNotExist=true
+    username: root
+    password:
+
+  flyway:
+    clean-disabled: false
