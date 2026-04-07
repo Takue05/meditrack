@@ -6,5 +6,8 @@ spring:
     username: root
     password:
 
+  jwt:
+    secret: pwllf3EqSlENvlPXtOCezdUJi6XAmAtrwO+aPVss+UyovF9Hw/4Rg59j/6gCScZTpchy8tI3F94VVAQtfmpFnw==
+
   flyway:
     clean-disabled: false

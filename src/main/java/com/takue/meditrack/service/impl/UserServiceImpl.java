@@ -29,4 +29,5 @@ public class UserServiceImpl implements UserService {
         User saved = userRepository.save(user);
         return userMapper.toDto(saved);
     }
+
 }

@@ -1,28 +1,34 @@
 package com.takue.meditrack.service.impl;
 
-import com.takue.meditrack.dto.LoginRequest;
-import com.takue.meditrack.model.User;
 import com.takue.meditrack.repository.UserRepository;
-import com.takue.meditrack.service.LoginService;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NullMarked;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-@Service
-public class LoginServiceImpl implements LoginService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+import java.util.Collections;
 
-    public LoginServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+@Service
+@RequiredArgsConstructor
+@NullMarked
+public class LoginServiceImpl implements UserDetailsService {
+
+    private final UserRepository userRepository;
 
     @Override
-    public Boolean authenticate(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail()).orElse(null);
-        if (user==null) {
-            return false;
-        }
-        return passwordEncoder.matches(request.getPassword(), user.getPasswordHash());
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        var user = userRepository.findByEmail(email).orElseThrow(
+                () -> new UsernameNotFoundException("User not found")
+        );
+
+        return new User(
+                user.getEmail(),
+                user.getPasswordHash(),
+                Collections.emptyList()
+        );
+
     }
 }

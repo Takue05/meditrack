@@ -1,33 +1,49 @@
 package com.takue.meditrack.controller;
 
 
+import com.takue.meditrack.dto.JwtResponse;
 import com.takue.meditrack.dto.LoginRequest;
-import com.takue.meditrack.service.LoginService;
+import com.takue.meditrack.service.JwtService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
-    private final LoginService loginService;
 
-    public AuthController(LoginService loginService) {
-        this.loginService = loginService;
-    }
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(
-            @Valid @RequestBody LoginRequest request
-    ) {
-        if (!loginService.authenticate(request)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        return ResponseEntity.ok().build();
+    public ResponseEntity<JwtResponse> login(
+            @Valid @RequestBody LoginRequest request) {
+        authenticationManager.authenticate(
 
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+        var token = jwtService.generateToken(request.getEmail());
+        return ResponseEntity.ok(new JwtResponse(token));
+
+    }
+
+    @PostMapping("/validate")
+    public boolean validate(@RequestHeader("Authorization") String authHeader){
+        var token = authHeader.replace("Bearer ", "");
+        return jwtService.validateToken(token);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Void> handleBadCredentialsException(){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
