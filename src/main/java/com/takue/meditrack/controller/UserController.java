@@ -2,6 +2,7 @@ package com.takue.meditrack.controller;
 
 import com.takue.meditrack.dto.RegisterUserRequest;
 import com.takue.meditrack.dto.UserDto;
+import com.takue.meditrack.mapper.UserMapper;
 import com.takue.meditrack.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.net.URI;
 public class UserController {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @PostMapping
     public ResponseEntity<?> registerUser(
@@ -28,6 +30,17 @@ public class UserController {
         UserDto userDto = userService.registerUser(request);
         URI uri = uriBuilder.path("/users/{id}").buildAndExpand(userDto.getUserId()).toUri();
         return ResponseEntity.created(uri).body(userDto);
+
+    }
+
+    @RequestMapping("/me")
+    public ResponseEntity<UserDto> me(){
+        if(userService.getCurrentUser() == null){
+            return ResponseEntity.notFound().build();
+        }
+        UserDto dto = userMapper.toDto(userService.getCurrentUser());
+        return ResponseEntity.ok(dto);
+
 
     }
 }

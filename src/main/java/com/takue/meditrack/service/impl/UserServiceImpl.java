@@ -1,5 +1,6 @@
 package com.takue.meditrack.service.impl;
 
+import com.takue.meditrack.config.SecurityConfig;
 import com.takue.meditrack.dto.RegisterUserRequest;
 import com.takue.meditrack.dto.UserDto;
 import com.takue.meditrack.exception.EmailAlreadyRegisteredException;
@@ -8,8 +9,11 @@ import com.takue.meditrack.model.User;
 import com.takue.meditrack.repository.UserRepository;
 import com.takue.meditrack.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 
 @Service
@@ -30,4 +34,15 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(saved);
     }
 
+
+    @Override
+    public User getCurrentUser() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return null;
+        }
+        var email = (String) authentication.getPrincipal();
+        return userRepository.findByEmail(email).orElse(null);
+
+    }
 }
