@@ -27,11 +27,11 @@ public class AuthController {
         authenticationManager.authenticate(
 
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
+                        request.email(),
+                        request.password()
                 )
         );
-        var token = jwtService.generateToken(request.getEmail());
+        var token = jwtService.generateToken(request.email());
         return ResponseEntity.ok(new JwtResponse(token));
 
     }

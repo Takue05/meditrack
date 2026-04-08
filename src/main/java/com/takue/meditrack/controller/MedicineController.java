@@ -21,7 +21,7 @@ public class MedicineController {
     public ResponseEntity<MedicineDto>addMedicine(@RequestBody AddMedicineRequest request,
                                                   UriComponentsBuilder uriBuilder){
         MedicineDto dto = service.add(request);
-        URI uri = uriBuilder.path("/medicines/{id}").buildAndExpand(dto.getMedicineId()).toUri();
+        URI uri = uriBuilder.path("/medicines/{id}").buildAndExpand(dto.medicineId()).toUri();
         return ResponseEntity.created(uri).body(dto);
     }
 

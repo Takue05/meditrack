@@ -1,14 +1,13 @@
 package com.takue.meditrack.dto;
 
-import lombok.Data;
-
 import java.time.LocalDate;
 
-@Data
-public class AddMedicineRequest {
-    private String productCode;
-    private String productName;
-    private double mrp;
-    private LocalDate expiryDate;
-    private int quantity;
+
+public record AddMedicineRequest (
+     String productCode,
+     String productName,
+     double mrp,
+      LocalDate expiryDate,
+      int quantity
+){
 }

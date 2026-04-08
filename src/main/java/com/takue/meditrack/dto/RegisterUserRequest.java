@@ -1,12 +1,5 @@
 package com.takue.meditrack.dto;
 
-import lombok.Data;
+public record RegisterUserRequest(String username, String passwordHash, String email, String role) {
 
-@Data
-public class RegisterUserRequest {
-
-    private String username;
-    private  String passwordHash;
-    private String email;
-    private String role;
 }
